@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -386,8 +385,8 @@ const SCENARIOS = [
 // ── STATE ─────────────────────────────────────────────────────────────────────
 const PLAYER_COLORS = ["#6c5ce7","#00cec9","#fd79a8","#fdcb6e","#00b894","#a29bfe","#e17055","#55efc4","#fab1a0"];
 
-let players = Array.from({length:9},(_,i)=>({
-  name:`AM ${i+1}`, color:PLAYER_COLORS[i], points:0
+let players = ["Cole","Geoff","Gina","Grace","Jacob","Sammi","Tyler","Stacey","Lauren"].map((name,i)=>({
+  name, color:PLAYER_COLORS[i], points:0
 }));
 
 let usedTiles = new Set();
@@ -415,7 +414,7 @@ function renderSidebar(){
     </div>`).join('');
 }
 
-function renamePlayer(i,n){ players[i].name=n||`AM ${i+1}`; renderSidebar(); renderTurnBanner(); }
+function renamePlayer(i,n){ players[i].name=n||players[i].name;; renderSidebar(); renderTurnBanner(); }
 
 function shuffleTurnOrder(){
   // Fisher-Yates shuffle of players array, reset turnIdx
@@ -456,7 +455,7 @@ function renderBoard(){
       <div class="used-check">✓</div>
     </div>`).join('');
   document.getElementById('scenario-tiles').innerHTML=SCENARIOS.map((s,i)=>`
-    <div class="tile scenario-tile ${usedTiles.has('s'+i)?'used':''}" onclick="openScenario(${i})">
+    <div class="tile scenario-tile ${''}" onclick="openScenario(${i})">
       <div class="tile-badge">${s.badge.toUpperCase()}</div>
       <div class="tile-points">${s.points}</div>
       <div class="tile-label">${s.label}</div>
@@ -559,7 +558,7 @@ function noSteal(){
 
 // ── SCENARIO ──────────────────────────────────────────────────────────────────
 function openScenario(idx){
-  if(usedTiles.has('s'+idx)) return;
+  
   currentTileKey='s'+idx; scenarioRevealed=false;
   const s=SCENARIOS[idx];
   openModal(`
@@ -595,7 +594,6 @@ function revealScenario(idx){
       <div class="quote-block">${s.oneliner}</div>
     </div>`;
   document.querySelector('.btn-teal[onclick^="revealScenario"]').style.display='none';
-  markUsed(currentTileKey);
   showAwardPanel(s.points,null,false);
 }
 
