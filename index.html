@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tapcart AM Challenge</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#07070f; --surface:#0f0f1c; --surface2:#161626; --border:#252540;
+  --accent:#6c5ce7; --accent2:#00cec9; --gold:#fdcb6e; --warn:#fd79a8;
+  --text:#e8e8f0; --muted:#5a5a7a; --green:#00b894; --red:#e55;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(108,92,231,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(108,92,231,.035) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0;}
+.glow{position:fixed;border-radius:50%;filter:blur(140px);pointer-events:none;opacity:.09;}
+.glow-1{width:700px;height:700px;background:var(--accent);top:-300px;left:-200px;}
+.glow-2{width:500px;height:500px;background:var(--accent2);bottom:-200px;right:-100px;}
+
+/* LAYOUT */
+.outer{position:relative;z-index:1;display:grid;grid-template-columns:1fr 260px;gap:24px;max-width:1180px;margin:0 auto;padding:28px 20px 80px;align-items:start;}
+@media(max-width:900px){.outer{grid-template-columns:1fr;}.sidebar{order:-1;}}
+
+/* MAIN */
+.main{}
+.game-header{text-align:center;margin-bottom:24px;}
+.tag{display:inline-block;background:rgba(108,92,231,.15);border:1px solid rgba(108,92,231,.4);color:var(--accent);font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;padding:5px 14px;border-radius:20px;margin-bottom:12px;}
+.game-title{font-family:'Syne',sans-serif;font-size:clamp(24px,4vw,42px);font-weight:800;line-height:1.05;margin-bottom:6px;}
+.game-title span{color:var(--gold);}
+.game-sub{color:var(--muted);font-size:13px;font-weight:300;}
+
+/* TURN BANNER */
+.turn-banner{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:12px 18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.turn-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-family:'Syne',sans-serif;}
+.turn-name{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:var(--gold);}
+.turn-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.turn-next{font-size:11px;color:var(--muted);}
+.turn-advance-btn{background:transparent;border:1.5px solid var(--border);border-radius:8px;padding:7px 14px;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .2s;white-space:nowrap;}
+.turn-advance-btn:hover{border-color:var(--accent2);color:var(--accent2);}
+
+/* BOARD */
+.board-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:500px){.board-cols{grid-template-columns:1fr;}}
+.col-header{text-align:center;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 0 10px;}
+.col-header.quiz-col{color:var(--accent2);}
+.col-header.scenario-col{color:var(--warn);}
+.tile-grid{display:flex;flex-direction:column;gap:9px;}
+
+.tile{background:var(--surface);border:1.5px solid var(--border);border-radius:13px;padding:16px 18px;cursor:pointer;transition:all .22s;position:relative;overflow:hidden;min-height:78px;display:flex;flex-direction:column;justify-content:center;}
+.tile::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.03),transparent);pointer-events:none;}
+.tile:hover:not(.used){transform:translateY(-3px);box-shadow:0 10px 32px rgba(0,0,0,.45);}
+.tile.quiz-tile:hover:not(.used){border-color:var(--accent2);}
+.tile.scenario-tile:hover:not(.used){border-color:var(--warn);}
+.tile.used{opacity:.25;cursor:default;background:var(--surface2);}
+.tile-points{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;line-height:1;margin-bottom:3px;}
+.quiz-tile .tile-points{color:var(--accent2);}
+.scenario-tile .tile-points{color:var(--warn);}
+.tile.used .tile-points{opacity:0;}
+.tile-label{font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.4px;}
+.tile-badge{position:absolute;top:10px;right:10px;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:3px 7px;border-radius:8px;}
+.quiz-tile .tile-badge{background:rgba(0,206,201,.1);color:var(--accent2);}
+.scenario-tile .tile-badge{background:rgba(253,121,168,.1);color:var(--warn);}
+.used-check{position:absolute;inset:0;display:none;align-items:center;justify-content:center;font-size:24px;}
+.tile.used .used-check{display:flex;}
+
+.board-footer{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px;}
+
+/* SIDEBAR */
+.sidebar{position:sticky;top:28px;}
+.sidebar-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:16px;}
+.sidebar-title{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent2);margin-bottom:14px;}
+
+/* PLAYER ROWS */
+.player-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;margin-bottom:6px;transition:all .2s;border:1.5px solid transparent;}
+.player-row.active-turn{border-color:var(--gold);background:rgba(253,203,110,.05);}
+.player-row.top-score{background:rgba(253,203,110,.04);}
+.player-rank{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);min-width:16px;}
+.player-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.player-name-input{background:transparent;border:none;outline:none;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--text);width:100%;min-width:0;}
+.player-pts{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--gold);min-width:32px;text-align:right;}
+.player-turn-arrow{font-size:12px;color:var(--gold);margin-left:2px;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(7,7,15,.93);backdrop-filter:blur(8px);z-index:100;display:none;align-items:flex-start;justify-content:center;padding:32px 20px;overflow-y:auto;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:20px;width:100%;max-width:700px;padding:34px;position:relative;animation:popIn .3s cubic-bezier(.34,1.56,.64,1) both;margin:auto;}
+@keyframes popIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+.modal-close{position:absolute;top:14px;right:14px;background:var(--surface2);border:1px solid var(--border);color:var(--muted);font-size:18px;width:30px;height:30px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.modal-close:hover{color:var(--text);border-color:var(--accent);}
+.badge-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.modal-badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:4px 11px;border-radius:20px;}
+.modal-badge.quiz{background:rgba(0,206,201,.12);color:var(--accent2);border:1px solid rgba(0,206,201,.25);}
+.modal-badge.scenario{background:rgba(253,121,168,.12);color:var(--warn);border:1px solid rgba(253,121,168,.25);}
+.modal-badge.cfo{background:rgba(253,203,110,.12);color:var(--gold);border:1px solid rgba(253,203,110,.25);}
+.modal-badge.cto{background:rgba(108,92,231,.12);color:var(--accent);border:1px solid rgba(108,92,231,.25);}
+.modal-pts-row{display:flex;align-items:baseline;gap:8px;margin:12px 0 16px;}
+.modal-pts{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;}
+.pts-label{color:var(--muted);font-size:13px;}
+.modal-q{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;line-height:1.45;margin-bottom:20px;}
+
+.options{display:flex;flex-direction:column;gap:9px;}
+.option{background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:12px 15px;cursor:pointer;transition:all .18s;font-size:14px;line-height:1.5;text-align:left;color:var(--text);display:flex;align-items:flex-start;gap:11px;}
+.option:hover:not(:disabled){border-color:var(--accent2);background:rgba(0,206,201,.06);transform:translateX(3px);}
+.option:disabled{cursor:default;}
+.option.correct{border-color:var(--green);background:rgba(0,184,148,.1);}
+.option.wrong{border-color:var(--red);background:rgba(238,85,85,.08);opacity:.6;}
+.option.reveal{border-color:var(--green);background:rgba(0,184,148,.05);}
+.opt-letter{min-width:25px;height:25px;border-radius:6px;background:var(--border);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px;transition:background .2s;}
+.option.correct .opt-letter{background:var(--green);color:white;}
+.option.wrong .opt-letter{background:var(--red);color:white;}
+
+.feedback{margin-top:12px;padding:13px 15px;border-radius:10px;font-size:13px;line-height:1.6;display:none;animation:fadeIn .25s ease;}
+.feedback.show{display:block;}
+.feedback.correct-fb{background:rgba(0,184,148,.08);border:1px solid rgba(0,184,148,.25);}
+.feedback.wrong-fb{background:rgba(253,121,168,.07);border:1px solid rgba(253,121,168,.25);}
+.feedback strong{display:block;margin-bottom:4px;font-family:'Syne',sans-serif;font-size:11px;letter-spacing:.5px;}
+.feedback.correct-fb strong{color:var(--green);}
+.feedback.wrong-fb strong{color:var(--warn);}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* STEAL BANNER */
+.steal-banner{background:rgba(253,203,110,.07);border:1px solid rgba(253,203,110,.25);border-radius:10px;padding:12px 15px;margin-top:12px;font-size:13px;line-height:1.5;display:none;}
+.steal-banner.show{display:block;}
+.steal-banner strong{display:block;font-family:'Syne',sans-serif;font-size:11px;letter-spacing:.5px;color:var(--gold);margin-bottom:5px;}
+.steal-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.steal-player-btn{background:var(--surface);border:1.5px solid var(--border);border-radius:7px;padding:7px 12px;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;color:var(--text);display:flex;align-items:center;gap:7px;}
+.steal-player-btn:hover{border-color:var(--gold);color:var(--gold);}
+
+.quote-block{background:rgba(108,92,231,.07);border:1px solid rgba(108,92,231,.2);border-radius:10px;padding:13px 17px 13px 26px;font-style:italic;font-size:13px;line-height:1.7;color:var(--text);margin:11px 0;position:relative;}
+.quote-block::before{content:'"';font-family:'Syne',sans-serif;font-size:32px;color:var(--accent);opacity:.35;position:absolute;top:2px;left:9px;line-height:1;}
+.section-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent2);margin-bottom:9px;font-family:'Syne',sans-serif;}
+.cs-item{background:var(--surface2);border-left:3px solid var(--accent2);border-radius:0 8px 8px 0;padding:11px 13px;margin-bottom:8px;}
+.cs-item strong{font-family:'Syne',sans-serif;font-size:12px;color:var(--text);display:block;margin-bottom:2px;}
+.cs-item p{color:var(--muted);font-size:12px;line-height:1.55;}
+
+.award-panel{margin-top:16px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;}
+.award-panel .section-label{color:var(--gold);margin-bottom:10px;}
+.award-row{display:flex;gap:7px;flex-wrap:wrap;align-items:center;}
+.award-player-btn{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:8px 13px;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;color:var(--text);display:flex;align-items:center;gap:7px;}
+.award-player-btn:hover{border-color:var(--gold);color:var(--gold);}
+.award-player-btn.awarded{background:rgba(253,203,110,.1);border-color:var(--gold);color:var(--gold);}
+
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:8px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:.4px;transition:all .2s;margin-top:12px;}
+.btn-primary{background:var(--accent);color:white;}
+.btn-primary:hover{background:#7d6ef0;transform:translateY(-1px);}
+.btn-teal{background:var(--accent2);color:#07070f;}
+.btn-teal:hover{opacity:.85;transform:translateY(-1px);}
+.btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--muted);}
+.btn-ghost:hover{border-color:var(--accent);color:var(--text);}
+
+.winner-modal{text-align:center;}
+.trophy{font-size:56px;display:block;margin-bottom:12px;animation:bounce .6s ease both;}
+@keyframes bounce{0%{transform:scale(0);opacity:0}60%{transform:scale(1.2);opacity:1}100%{transform:scale(1);}}
+.winner-name{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--gold);}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<div class="glow glow-1"></div>
+<div class="glow glow-2"></div>
+
+<div class="outer">
+  <!-- MAIN BOARD -->
+  <div class="main">
+    <div class="game-header">
+      <div class="tag">AM Weekly Meeting</div>
+      <div class="game-title">Tapcart <span>Objection Challenge</span></div>
+      <div class="game-sub">Pick a tile. Score points. Outsell everyone.</div>
+    </div>
+
+    <!-- TURN BANNER -->
+    <div class="turn-banner" id="turn-banner"></div>
+
+    <!-- BOARD -->
+    <div class="board-cols">
+      <div>
+        <div class="col-header quiz-col">⚡ Quiz Questions</div>
+        <div class="tile-grid" id="quiz-tiles"></div>
+      </div>
+      <div>
+        <div class="col-header scenario-col">🎭 Scenario Drills</div>
+        <div class="tile-grid" id="scenario-tiles"></div>
+      </div>
+    </div>
+
+    <div class="board-footer">
+      <button class="btn btn-ghost" onclick="resetGame()" style="margin-top:0;font-size:12px;">↺ Reset</button>
+      <button class="btn btn-ghost" onclick="showWinner()" id="winner-btn" style="margin-top:0;font-size:12px;display:none;">🏆 Final Scores</button>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-card">
+      <div class="sidebar-title">🏆 Leaderboard</div>
+      <div id="leaderboard"></div>
+    </div>
+    <div class="sidebar-card" style="padding:14px 16px;">
+      <div class="sidebar-title" style="margin-bottom:10px;">Players</div>
+      <div style="font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:10px;">Click any name to rename. Turn order goes top to bottom.</div>
+      <button class="btn btn-ghost" onclick="shuffleTurnOrder()" style="margin-top:0;font-size:11px;padding:7px 12px;width:100%;justify-content:center;">🔀 Shuffle Turn Order</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
+  <div class="modal" id="modal-content"></div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const QUESTIONS = [
+  {
+    points:100, badge:"cfo", label:"Channel Economics",
+    q:"What's the cost-per-revenue-dollar range for Tapcart vs. Meta/Google Ads?",
+    options:["Tapcart $0.15–0.25 / Meta $0.40–0.60","Tapcart $0.03–0.06 / Meta $0.25–0.40","Tapcart $0.08–0.12 / Meta $0.20–0.30","About the same for both"],
+    correct:1,
+    feedback:"Tapcart runs $0.03–$0.06 per dollar of revenue — comparable to email economics. Meta/Google run $0.25–$0.40. This benchmark is your strongest opener with any finance team."
+  },
+  {
+    points:100, badge:"cfo", label:"App User Performance",
+    q:"How much higher do app users convert compared to mobile web users?",
+    options:["1.5–2x higher","3–5x higher","7–8x higher","About the same"],
+    correct:1,
+    feedback:"App users convert 3–5x higher than mobile web. That means more revenue from traffic the merchant already paid to acquire — the app amplifies existing marketing spend."
+  },
+  {
+    points:100, badge:"cfo", label:"LTV Multiplier",
+    q:"What is the approximate LTV difference between app users and non-app users?",
+    options:["App users have 1.2x higher LTV","App users have 2–3x higher LTV","LTV is roughly the same across channels","Non-app users have higher LTV because they browse more"],
+    correct:1,
+    feedback:"App users typically have 2–3x higher LTV. This is a critical CFO number — it means retaining an app user is dramatically more valuable than retaining a mobile web customer."
+  },
+  {
+    points:200, badge:"cfo", label:"Cannibalization Rebuttal",
+    q:"CFO says: 'These are our best customers — they would have bought anyway.' What's your strongest first counter-move?",
+    options:["Offer a discount to ease concerns","Pull before/after purchase frequency & AOV for customers who adopted the app","Agree and suggest a lower plan tier","Redirect to overall revenue growth numbers"],
+    correct:1,
+    feedback:"Before/after cohort data is your best proof. If the app just captured demand, frequency and AOV stay flat. They almost always go UP after app adoption — that delta is your incremental evidence."
+  },
+  {
+    points:200, badge:"cfo", label:"Budget Framing",
+    q:"A CFO is bucketing Tapcart next to their Shopify subscription as a 'tech cost.' How should you reframe it?",
+    options:["Agree — it is a platform cost like Shopify","It belongs in IT infrastructure","It belongs in the marketing/revenue budget — a fixed-cost owned channel, not a tech expense","Ask them to create a separate 'mobile' budget line"],
+    correct:2,
+    feedback:"Tapcart belongs in the marketing budget next to Meta, Google, and SMS — not the tech stack. It's a fixed-cost owned channel with variable upside. Changing the bucket changes the entire ROI conversation."
+  },
+  {
+    points:200, badge:"cfo", label:"Retargeting Displacement",
+    q:"Even if a CFO assumes zero incremental revenue from the app, what argument still makes it ROI-positive?",
+    options:["App development savings","Push notifications replace paid retargeting spend they're already buying on Meta/Google","Lower Shopify transaction fees","Reduced customer service costs"],
+    correct:1,
+    feedback:"Retargeting displacement is the floor, not the ceiling. Push notifications do the same job as Meta/Google retargeting ads — for free. Even assuming zero new revenue, the app pays for itself by eliminating spend they're already making."
+  },
+  {
+    points:300, badge:"cto", label:"Build vs. Buy — Core Math",
+    q:"CTO wants to use AI to build a custom app. What's the key stat that reframes total cost of ownership?",
+    options:["AI-built apps cost 50% less to maintain","The build is only 15–20% of TCO — the other 80–85% is maintenance, Shopify parity, compliance, and infra","Custom apps break even with Tapcart at 18 months","Engineering overhead adds 25% to all custom builds"],
+    correct:1,
+    feedback:"Build cost is ~15–20% of TCO. The other 80–85% is ongoing: Shopify parity, App Store compliance, infrastructure, and optimization. AI helped write the code — it didn't staff the team to maintain it."
+  },
+  {
+    points:300, badge:"cto", label:"Shopify Parity Risk",
+    q:"Why is 'Shopify parity' a compelling argument against a custom build?",
+    options:["Shopify's API is closed to third parties","Shopify ships constant updates — a custom app drifts out of sync fast without a dedicated team","Shopify charges extra fees for non-platform apps","Shopify rarely updates so it's a minimal concern"],
+    correct:1,
+    feedback:"Shopify ships constant API changes, checkout updates, and deprecations. An app built in February drifts out of sync by April. Tapcart has an entire engineering team on Shopify parity — with a custom app, that's your team's job forever."
+  },
+  {
+    points:400, badge:"cto", label:"Opportunity Cost",
+    q:"For a CTO, what's the most strategic framing of opportunity cost for building custom?",
+    options:["Custom mobile dev is expensive to hire","App Store fees eat into margins","Every engineering hour maintaining a commerce app is an hour not spent on what actually differentiates the business","Custom apps require specialized QA tooling"],
+    correct:2,
+    feedback:"Hit the strategic priority: 'You could build this — but should you?' Engineering cycles on commerce app maintenance can't go toward the core product. Tapcart delivers a better app without consuming any technical bandwidth."
+  },
+  {
+    points:400, badge:"cto", label:"Network Effect",
+    q:"What compounding advantage does Tapcart have that a custom app fundamentally can't replicate?",
+    options:["Lower App Store submission fees","Learnings from thousands of merchant apps feed back into the platform — push algorithms, UX, and integrations improve for everyone","Pre-approved Apple developer status","White-label design templates"],
+    correct:1,
+    feedback:"The network effect is a true differentiator. Tapcart improves for every merchant because aggregate learnings feed back into the product. Your custom app only improves if you invest in it — Tapcart gives you R&D you never had to fund."
+  },
+  {
+    points:400, badge:"cfo", label:"Push Attribution",
+    q:"What's the definitive proof that push notifications drive truly incremental revenue — not captured demand?",
+    options:["Total app revenue exceeds mobile web revenue","A customer gets a push, opens it, and buys in that session — they weren't already on the site about to checkout","Push open rates beat email open rates","App users have higher LTV scores"],
+    correct:1,
+    feedback:"Push-session attribution is the smoking gun. Ask the CFO: 'If we hadn't sent that push, would they have gone to your site at that exact moment?' Almost always no. That's the triggered, incremental purchase."
+  },
+  {
+    points:400, badge:"cto", label:"App Store Risk",
+    q:"What's the most impactful App Store risk to raise with a CTO considering a custom build?",
+    options:["Apple's 30% fee applies to all custom apps","Custom apps can't use Shopify Checkout natively","One App Store rejection can leave you offline for weeks during a critical sales period — Tapcart handles all of this","Getting approval takes longer for new developer accounts"],
+    correct:2,
+    feedback:"A rejection during a product launch or peak season could be devastating. Tapcart handles all submissions, review cycles, compliance changes, and re-submissions. This is a real operational risk that resonates with technical leaders."
+  },
+  {
+    points:500, badge:"cfo", label:"Dormant Reactivation",
+    q:"What data proves the app reactivates churned customers rather than just serving active ones?",
+    options:["Overall app download numbers","Customers with 60–90+ day purchase gaps who re-engaged via a push-triggered session after downloading the app","Monthly active user counts","App store rating improvements"],
+    correct:1,
+    feedback:"Dormant reactivation is one of the cleanest incremental proofs. Find customers who effectively churned — no purchase in 60–90+ days — who then downloaded the app and re-engaged via push. That conversion is impossible to attribute to existing demand."
+  },
+  {
+    points:500, badge:"cto", label:"Infra & Uptime",
+    q:"What critical operational question should you ask a CTO who wants to build custom?",
+    options:["'Do you have iOS developers on staff?'","'Who is your on-call engineer when the app goes down during a major product launch at 11pm on a Saturday?'","'Have you worked with React Native before?'","'What is your App Store review timeline?'"],
+    correct:1,
+    feedback:"Uptime and incident response is a real cost that's easy to overlook. Tapcart has dedicated infrastructure, monitoring, and on-call response. With a custom app, that's whoever you can find on a Saturday night — and that gap tends to show up at the worst possible moment."
+  },
+  {
+    points:500, badge:"cfo", label:"One-Liner: ROI",
+    q:"Complete this one-liner: 'Tapcart is a ____-cost revenue channel that generates incremental dollars at a fraction of paid acquisition — and the economics get better over time as your install base grows.'",
+    options:["variable","fixed","performance-based","subscription"],
+    correct:1,
+    feedback:"'Fixed-cost revenue channel' is the exact framing. It positions Tapcart as the opposite of paid media — your cost stays flat while the upside scales with every new app install. That's a fundamentally different and more favorable economic model."
+  }
+];
+
+const SCENARIOS = [
+  {
+    points:200, badge:"cfo", label:"The Cannibalization Trap",
+    title:"The Cannibalization Trap",
+    objection:`"I've been looking at this data and honestly… these are our most loyal customers downloading the Tapcart app. They were already buying from us on mobile web. I think we're just moving revenue around, not creating new revenue. Can you actually prove this is incremental?"`,
+    framework:[
+      {icon:"📊",title:"Before/After Purchase Behavior",body:"Pull cohort data: frequency and AOV before vs. after app adoption. If it's just demand capture, these stay flat. They almost always go up — that delta is your incremental proof."},
+      {icon:"📲",title:"Push Session Attribution",body:"Find push-triggered sessions ending in a purchase. Ask: 'Would this customer have gone to your website at that exact moment without the push?' No. That's incremental."},
+      {icon:"📈",title:"Channel Substitution Test",body:"Show total mobile revenue (app + web) over time. In most cases, mobile web stays flat while app revenue grows — the pie is bigger, not just resliced."},
+      {icon:"💤",title:"Dormant Reactivation",body:"Find customers with 60–90+ day purchase gaps who re-engaged through a push session. They had effectively churned — the app brought them back."}
+    ],
+    oneliner:"Your best customers do download the app — but the data shows they become even better customers after. The app isn't capturing demand; it's creating purchase occasions that wouldn't have existed."
+  },
+  {
+    points:200, badge:"cto", label:"The AI Build Threat",
+    title:"The AI Build Threat",
+    objection:`"Look, I've been playing with AI coding tools and honestly, we could probably have an app MVP ready in a few weeks for a fraction of what we pay Tapcart. Why are we still paying for this?"`,
+    framework:[
+      {icon:"🏗️",title:"Build ≠ Total Cost of Ownership",body:"Build is 15–20% of the cost. Maintenance, Shopify parity, App Store compliance, infrastructure, and optimization make up the other 80–85% — and that never stops."},
+      {icon:"🔄",title:"Shopify is Always Moving",body:"Shopify ships constant API changes and checkout updates. Your 'built-in-weeks' app will drift out of sync within months. Tapcart maintains Shopify parity full-time."},
+      {icon:"🍎",title:"App Store Compliance is a Job",body:"One Apple rejection during a product launch could cost weeks of visibility. Tapcart handles all submissions, review cycles, and compliance changes."},
+      {icon:"⚡",title:"Opportunity Cost",body:"Every engineering hour maintaining a commerce app is an hour not spent on what differentiates your business. Is that how you want your team focused?"}
+    ],
+    oneliner:"AI made it cheaper to write code, not cheaper to operate a mobile commerce channel. The build is 15% of the cost — Tapcart handles the other 85% for a predictable annual fee."
+  },
+  {
+    points:300, badge:"cfo", label:"Push Rates Are Terrible",
+    title:"Push Notification Open Rates Are Terrible",
+    objection:`"Honestly, we've been pretty disappointed with our push notification performance. Our open rates are low, people are opting out, and it feels like we're just annoying our customers. If push is supposed to be the big value driver here, I'm not seeing it."`,
+    framework:[
+      {icon:"🔬",title:"Diagnose Before Defending",body:"Don't get defensive — get curious. Ask: what's their send cadence? Are they blasting the full list with generic messages, or segmenting by behavior? Most bad push performance is a strategy problem, not a platform problem."},
+      {icon:"🎯",title:"Segmentation is the Lever",body:"Batch-and-blast = low opens and high opt-outs. Behavioral triggers — cart abandonment, browse behavior, win-backs — consistently outperform. If they're not segmenting, that's the immediate fix."},
+      {icon:"📊",title:"Reframe the Success Metric",body:"Open rate is a vanity metric. The real number is revenue per notification sent. A 10% open rate driving $15K beats a 30% open rate driving $2K. Redirect to revenue attribution, not opens."},
+      {icon:"🤖",title:"This is What AI Push Solves",body:"Tapcart's AI push optimization uses behavioral data across the merchant network to send the right message to the right person at the right time. If they're not using it, this is a product education moment, not a renewal risk."}
+    ],
+    oneliner:"Low open rates are a targeting and timing problem, not a push problem. The fix isn't to stop pushing — it's to push smarter. That's exactly what AI-powered segmentation is built for."
+  },
+  {
+    points:300, badge:"cfo", label:"The Budget Category Argument",
+    title:"The Budget Category Argument",
+    objection:`"When I look at our tech stack costs — Shopify, our ESP, our OMS — Tapcart is one of our most expensive 'software' line items. I need to find cuts and this seems like a candidate."`,
+    framework:[
+      {icon:"📁",title:"Reframe the Budget Category",body:"Tapcart isn't a tech cost — it's a marketing/revenue channel. It belongs next to Meta, Google, and SMS in the marketing budget, not the tech stack."},
+      {icon:"💰",title:"Cost Per Revenue Dollar",body:"Annual Tapcart cost ÷ app-attributed revenue. At $24K/yr driving $500K in incremental revenue, that's $0.048 per dollar — a 21x return. Meta runs $0.25–$0.40."},
+      {icon:"📣",title:"Push = Free Retargeting",body:"How much are they spending to retarget existing customers on Meta/Google? Push does that job for free. Even assuming zero incremental revenue, the app pays for itself on retargeting displacement alone."},
+      {icon:"📉",title:"Fixed Cost, Variable Upside",body:"Paid media scales with spend. Tapcart is a fixed cost with unlimited upside as the install base grows — the economics improve over time, the opposite of every other acquisition channel."}
+    ],
+    oneliner:"Tapcart is a fixed-cost revenue channel, not a tech subscription. It belongs in the marketing budget and it's your cheapest cost-per-revenue-dollar channel outside of email."
+  },
+  {
+    points:400, badge:"cto", label:"'Our Dev Team Can Maintain It'",
+    title:"'Our Dev Team Can Maintain It'",
+    objection:`"I hear your point about ongoing costs, but we have a solid internal engineering team. They're capable — this isn't beyond them. We could own this ourselves and build exactly what we want."`,
+    framework:[
+      {icon:"🎯",title:"Capable ≠ Should",body:"This isn't a skills argument — it's a priorities argument. The question isn't whether your team can do it, it's whether that's the best use of their time. Every sprint on a commerce app is a sprint not on your core product."},
+      {icon:"📅",title:"The Maintenance Treadmill",body:"Commerce app maintenance isn't a project with an end date — it's a permanent queue: Shopify updates, iOS releases, App Store compliance, SDK updates, crash patches. It doesn't slow down. And it'll compete with everything else your team is trying to ship."},
+      {icon:"🏆",title:"You Won't Out-Build the Platform",body:"Tapcart has an entire R&D team, learnings from thousands of merchant apps, and compounding improvements across push optimization, UX, and integrations. You'd be building from scratch to catch up to where Tapcart already is — and Tapcart will have moved forward by the time you get there."},
+      {icon:"💸",title:"Run the Headcount Math",body:"Even one engineer at $150K/yr fully allocated to commerce app maintenance costs more than most Tapcart plans — and that engineer can't replicate what years of platform investment have built."}
+    ],
+    oneliner:"Your team is capable. The question is whether this is what they should be capable at. Tapcart gives you a better app than they'd build, improving every month, without a single cycle of their time."
+  }
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+const PLAYER_COLORS = ["#6c5ce7","#00cec9","#fd79a8","#fdcb6e","#00b894","#a29bfe","#e17055","#55efc4","#fab1a0"];
+
+let players = Array.from({length:9},(_,i)=>({
+  name:`AM ${i+1}`, color:PLAYER_COLORS[i], points:0
+}));
+
+let usedTiles = new Set();
+let turnIdx = 0;
+let currentTileKey = null;
+let quizAnswered = false;
+let scenarioRevealed = false;
+let stealActive = false;
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+function init(){ renderSidebar(); renderTurnBanner(); renderBoard(); checkAllUsed(); }
+
+// ── SIDEBAR ───────────────────────────────────────────────────────────────────
+function renderSidebar(){
+  const sorted=[...players].map((p,i)=>({...p,origIdx:i})).sort((a,b)=>b.points-a.points);
+  document.getElementById('leaderboard').innerHTML = sorted.map((p,rank)=>`
+    <div class="player-row ${p.origIdx===turnIdx?'active-turn':''} ${rank===0&&p.points>0?'top-score':''}">
+      <span class="player-rank">#${rank+1}</span>
+      <span class="player-dot" style="background:${p.color}"></span>
+      <input class="player-name-input" value="${p.name}"
+        onchange="renamePlayer(${p.origIdx},this.value)"
+        title="Click to rename">
+      <span class="player-pts">${p.points}</span>
+      ${p.origIdx===turnIdx?'<span class="player-turn-arrow">▶</span>':''}
+    </div>`).join('');
+}
+
+function renamePlayer(i,n){ players[i].name=n||`AM ${i+1}`; renderSidebar(); renderTurnBanner(); }
+
+function shuffleTurnOrder(){
+  // Fisher-Yates shuffle of players array, reset turnIdx
+  for(let i=players.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [players[i],players[j]]=[players[j],players[i]];
+  }
+  turnIdx=0; renderSidebar(); renderTurnBanner();
+}
+
+// ── TURN BANNER ───────────────────────────────────────────────────────────────
+function renderTurnBanner(){
+  const cur=players[turnIdx];
+  const nxt=players[(turnIdx+1)%players.length];
+  document.getElementById('turn-banner').innerHTML=`
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span class="turn-dot" style="background:${cur.color}"></span>
+      <div>
+        <div class="turn-label">Now Picking</div>
+        <div class="turn-name">${cur.name}</div>
+      </div>
+    </div>
+    <div style="text-align:right">
+      <div class="turn-next">Up next: <strong style="color:var(--text)">${nxt.name}</strong></div>
+      <button class="turn-advance-btn" onclick="advanceTurn()" style="margin-top:6px">Skip Turn →</button>
+    </div>`;
+}
+
+function advanceTurn(){ turnIdx=(turnIdx+1)%players.length; renderSidebar(); renderTurnBanner(); }
+
+// ── BOARD ─────────────────────────────────────────────────────────────────────
+function renderBoard(){
+  document.getElementById('quiz-tiles').innerHTML=QUESTIONS.map((q,i)=>`
+    <div class="tile quiz-tile ${usedTiles.has('q'+i)?'used':''}" onclick="openQuiz(${i})">
+      <div class="tile-badge">${q.badge.toUpperCase()}</div>
+      <div class="tile-points">${q.points}</div>
+      <div class="tile-label">${q.label}</div>
+      <div class="used-check">✓</div>
+    </div>`).join('');
+  document.getElementById('scenario-tiles').innerHTML=SCENARIOS.map((s,i)=>`
+    <div class="tile scenario-tile ${usedTiles.has('s'+i)?'used':''}" onclick="openScenario(${i})">
+      <div class="tile-badge">${s.badge.toUpperCase()}</div>
+      <div class="tile-points">${s.points}</div>
+      <div class="tile-label">${s.label}</div>
+      <div class="used-check">✓</div>
+    </div>`).join('');
+}
+
+function checkAllUsed(){
+  const done=usedTiles.size>=(QUESTIONS.length+SCENARIOS.length);
+  document.getElementById('winner-btn').style.display=done?'inline-flex':'none';
+}
+
+// ── MODAL ─────────────────────────────────────────────────────────────────────
+function openModal(html){
+  document.getElementById('modal-content').innerHTML=html;
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+function handleOverlayClick(e){ if(e.target===document.getElementById('modal-overlay')) closeModal(); }
+
+// ── QUIZ ──────────────────────────────────────────────────────────────────────
+function openQuiz(idx){
+  if(usedTiles.has('q'+idx)) return;
+  currentTileKey='q'+idx; quizAnswered=false; stealActive=false;
+  const q=QUESTIONS[idx]; const L=['A','B','C','D'];
+  openModal(`
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="badge-row">
+      <span class="modal-badge quiz">⚡ Quiz</span>
+      <span class="modal-badge ${q.badge}">${q.badge==='cfo'?'💼 CFO':'💻 CTO'}</span>
+    </div>
+    <div class="modal-pts-row">
+      <span class="modal-pts" style="color:var(--accent2)">${q.points}</span>
+      <span class="pts-label">pts &nbsp;·&nbsp; <span style="color:var(--gold)">${players[turnIdx].name}'s pick</span></span>
+    </div>
+    <div class="modal-q">${q.q}</div>
+    <div class="options" id="modal-options">
+      ${q.options.map((o,i)=>`
+        <button class="option" id="mopt-${i}" onclick="selectQuizAnswer(${idx},${i})">
+          <span class="opt-letter">${L[i]}</span><span>${o}</span>
+        </button>`).join('')}
+    </div>
+    <div class="feedback" id="modal-feedback"></div>
+    <div class="steal-banner" id="steal-banner"></div>
+    <div id="modal-award"></div>
+  `);
+}
+
+function selectQuizAnswer(qIdx,chosen){
+  if(quizAnswered) return; quizAnswered=true;
+  const q=QUESTIONS[qIdx];
+  const opts=document.querySelectorAll('.option');
+  opts.forEach(o=>o.disabled=true);
+  const fb=document.getElementById('modal-feedback');
+  if(chosen===q.correct){
+    opts[chosen].classList.add('correct');
+    fb.className='feedback correct-fb show';
+    fb.innerHTML=`<strong>✓ Correct!</strong>${q.feedback}`;
+    showAwardPanel(q.points,true,false);
+    markUsed(currentTileKey);
+  } else {
+    opts[chosen].classList.add('wrong');
+    opts[q.correct].classList.add('reveal');
+    fb.className='feedback wrong-fb show';
+    fb.innerHTML=`<strong>✗ Not quite —</strong>${q.feedback}`;
+    // Show steal option
+    const sb=document.getElementById('steal-banner');
+    sb.className='steal-banner show';
+    const halfPts=Math.floor(q.points/2);
+    sb.innerHTML=`
+      <strong>⚡ Steal Opportunity — ${halfPts} pts</strong>
+      Someone else can answer for half points. Who's stealing?
+      <div class="steal-btns">
+        ${players.map((p,i)=>i===turnIdx?'':` 
+          <button class="steal-player-btn" onclick="stealAnswer(${qIdx},${i},${halfPts})">
+            <span style="width:7px;height:7px;border-radius:50%;background:${p.color};display:inline-block"></span>
+            ${p.name}
+          </button>`).join('')}
+        <button class="btn btn-ghost" onclick="noSteal()" style="margin-top:0;padding:7px 12px;font-size:11px;">No steal</button>
+      </div>`;
+    markUsed(currentTileKey);
+  }
+}
+
+function stealAnswer(qIdx,playerIdx,halfPts){
+  // Hide steal banner, award half points
+  document.getElementById('steal-banner').style.display='none';
+  showAwardPanel(halfPts,true,true,playerIdx);
+}
+
+function noSteal(){
+  document.getElementById('steal-banner').style.display='none';
+  showAwardPanel(0,false,false);
+  setTimeout(()=>{ advanceTurn(); closeModal(); },600);
+}
+
+// ── SCENARIO ──────────────────────────────────────────────────────────────────
+function openScenario(idx){
+  if(usedTiles.has('s'+idx)) return;
+  currentTileKey='s'+idx; scenarioRevealed=false;
+  const s=SCENARIOS[idx];
+  openModal(`
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="badge-row">
+      <span class="modal-badge scenario">🎭 Scenario</span>
+      <span class="modal-badge ${s.badge}">${s.badge==='cfo'?'💼 CFO':'💻 CTO'}</span>
+    </div>
+    <div class="modal-pts-row">
+      <span class="modal-pts" style="color:var(--warn)">${s.points}</span>
+      <span class="pts-label">pts up for grabs &nbsp;·&nbsp; <span style="color:var(--gold)">${players[turnIdx].name}'s pick</span></span>
+    </div>
+    <div class="modal-q">${s.title}</div>
+    <div class="section-label">The Merchant Says...</div>
+    <div class="quote-block">${s.objection}</div>
+    <p style="color:var(--muted);font-size:13px;margin-top:10px;line-height:1.5">
+      Give your response, then reveal the framework. You decide who gets points.
+    </p>
+    <button class="btn btn-teal" onclick="revealScenario(${idx})" style="margin-top:12px">Reveal Framework →</button>
+    <div id="scenario-framework"></div>
+    <div id="modal-award"></div>
+  `);
+}
+
+function revealScenario(idx){
+  if(scenarioRevealed) return; scenarioRevealed=true;
+  const s=SCENARIOS[idx];
+  document.getElementById('scenario-framework').innerHTML=`
+    <div style="margin-top:16px;animation:fadeIn .3s ease">
+      <div class="section-label">Response Framework</div>
+      ${s.framework.map(f=>`<div class="cs-item"><strong>${f.icon} ${f.title}</strong><p>${f.body}</p></div>`).join('')}
+      <div class="section-label" style="margin-top:10px">The One-Liner</div>
+      <div class="quote-block">${s.oneliner}</div>
+    </div>`;
+  document.querySelector('.btn-teal[onclick^="revealScenario"]').style.display='none';
+  markUsed(currentTileKey);
+  showAwardPanel(s.points,null,false);
+}
+
+// ── AWARD PANEL ───────────────────────────────────────────────────────────────
+function showAwardPanel(pts,wasCorrect,isSteal,forcedPlayerIdx=null){
+  const el=document.getElementById('modal-award'); if(!el) return;
+  if(pts===0) return;
+  const label = wasCorrect===true && !isSteal ? `Award ${pts} pts to:`
+    : wasCorrect===false ? `Award partial credit (optional):`
+    : isSteal ? `Steal! Award ${pts} pts to:`
+    : `Award ${pts} pts to:`;
+
+  // If forced (steal clicked), pre-populate and auto-award
+  if(forcedPlayerIdx!==null){
+    givePoints(forcedPlayerIdx,pts,true);
+    return;
+  }
+
+  el.innerHTML=`
+    <div class="award-panel">
+      <div class="section-label">🏆 ${label}</div>
+      <div class="award-row">
+        ${players.map((p,i)=>`
+          <button class="award-player-btn" id="award-btn-${i}" onclick="givePoints(${i},${pts},false)">
+            <span style="width:7px;height:7px;border-radius:50%;background:${p.color};display:inline-block"></span>
+            ${p.name}<span style="color:var(--muted);font-size:11px">+${pts}</span>
+          </button>`).join('')}
+        <button class="btn btn-ghost" onclick="skipAward()" style="margin-top:0;padding:8px 12px;font-size:11px">Skip</button>
+      </div>
+    </div>`;
+}
+
+function givePoints(playerIdx,pts,autoClose){
+  players[playerIdx].points+=pts;
+  renderSidebar();
+  const btn=document.getElementById(`award-btn-${playerIdx}`);
+  if(btn){ btn.classList.add('awarded'); btn.innerHTML=`<span style="width:7px;height:7px;border-radius:50%;background:${players[playerIdx].color};display:inline-block"></span>${players[playerIdx].name} ✓`; }
+  advanceTurn();
+  setTimeout(closeModal, autoClose?600:700);
+}
+
+function skipAward(){ advanceTurn(); closeModal(); }
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
+function markUsed(key){ usedTiles.add(key); renderBoard(); checkAllUsed(); }
+
+function resetGame(){
+  if(!confirm('Reset board and all scores?')) return;
+  usedTiles.clear(); players.forEach(p=>p.points=0); turnIdx=0;
+  renderSidebar(); renderTurnBanner(); renderBoard(); checkAllUsed(); closeModal();
+}
+
+function showWinner(){
+  const sorted=[...players].map((p,i)=>({...p,origIdx:i})).sort((a,b)=>b.points-a.points);
+  const top=sorted[0];
+  const isTie=sorted.length>1&&sorted[1].points===top.points;
+  const winLabel=isTie?sorted.filter(p=>p.points===top.points).map(p=>p.name).join(' & '):top.name;
+  openModal(`
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="winner-modal">
+      <span class="trophy">🏆</span>
+      <div style="color:var(--muted);font-size:10px;letter-spacing:2px;text-transform:uppercase;font-family:'Syne',sans-serif;margin-bottom:8px">${isTie?"It's a tie!":"Winner"}</div>
+      <div class="winner-name">${winLabel}</div>
+      <div style="color:var(--muted);font-size:14px;margin-top:5px">${top.points} points</div>
+      <div style="margin-top:20px;display:flex;flex-direction:column;gap:7px">
+        ${sorted.map((p,i)=>`
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 13px;background:var(--surface2);border-radius:8px">
+            <div style="display:flex;align-items:center;gap:9px">
+              <span style="font-family:'Syne',sans-serif;font-size:11px;color:var(--muted)">#${i+1}</span>
+              <span style="width:8px;height:8px;border-radius:50%;background:${p.color};display:inline-block"></span>
+              <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px">${p.name}</span>
+            </div>
+            <span style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--gold)">${p.points}</span>
+          </div>`).join('')}
+      </div>
+      <button class="btn btn-primary" onclick="resetGame()" style="margin-top:16px">Play Again</button>
+    </div>`);
+}
+
+init();
+</script>
+</body>
+</html>
