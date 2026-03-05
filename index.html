@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -235,88 +234,109 @@ const QUESTIONS = [
     feedback:"App users typically have 2–3x higher LTV. This is a critical CFO number — it means retaining an app user is dramatically more valuable than retaining a mobile web customer."
   },
   {
-    points:200, badge:"cfo", label:"Cannibalization Rebuttal",
+    points:100, badge:"cfo", label:"Cannibalization Rebuttal",
     q:"CFO says: 'These are our best customers — they would have bought anyway.' What's your strongest first counter-move?",
     options:["Offer a discount to ease concerns","Pull before/after purchase frequency & AOV for customers who adopted the app","Agree and suggest a lower plan tier","Redirect to overall revenue growth numbers"],
     correct:1,
     feedback:"Before/after cohort data is your best proof. If the app just captured demand, frequency and AOV stay flat. They almost always go UP after app adoption — that delta is your incremental evidence."
   },
   {
-    points:200, badge:"cfo", label:"Budget Framing",
+    points:100, badge:"cfo", label:"Budget Framing",
     q:"A CFO is bucketing Tapcart next to their Shopify subscription as a 'tech cost.' How should you reframe it?",
     options:["Agree — it is a platform cost like Shopify","It belongs in IT infrastructure","It belongs in the marketing/revenue budget — a fixed-cost owned channel, not a tech expense","Ask them to create a separate 'mobile' budget line"],
     correct:2,
     feedback:"Tapcart belongs in the marketing budget next to Meta, Google, and SMS — not the tech stack. It's a fixed-cost owned channel with variable upside. Changing the bucket changes the entire ROI conversation."
   },
   {
-    points:200, badge:"cfo", label:"Retargeting Displacement",
+    points:100, badge:"cfo", label:"Retargeting Displacement",
     q:"Even if a CFO assumes zero incremental revenue from the app, what argument still makes it ROI-positive?",
     options:["App development savings","Push notifications replace paid retargeting spend they're already buying on Meta/Google","Lower Shopify transaction fees","Reduced customer service costs"],
     correct:1,
     feedback:"Retargeting displacement is the floor, not the ceiling. Push notifications do the same job as Meta/Google retargeting ads — for free. Even assuming zero new revenue, the app pays for itself by eliminating spend they're already making."
   },
   {
-    points:300, badge:"cto", label:"Build vs. Buy — Core Math",
+    points:100, badge:"cto", label:"Build vs. Buy — Core Math",
     q:"CTO wants to use AI to build a custom app. What's the key stat that reframes total cost of ownership?",
     options:["AI-built apps cost 50% less to maintain","The build is only 15–20% of TCO — the other 80–85% is maintenance, Shopify parity, compliance, and infra","Custom apps break even with Tapcart at 18 months","Engineering overhead adds 25% to all custom builds"],
     correct:1,
     feedback:"Build cost is ~15–20% of TCO. The other 80–85% is ongoing: Shopify parity, App Store compliance, infrastructure, and optimization. AI helped write the code — it didn't staff the team to maintain it."
   },
   {
-    points:300, badge:"cto", label:"Shopify Parity Risk",
+    points:100, badge:"cto", label:"Shopify Parity Risk",
     q:"Why is 'Shopify parity' a compelling argument against a custom build?",
     options:["Shopify's API is closed to third parties","Shopify ships constant updates — a custom app drifts out of sync fast without a dedicated team","Shopify charges extra fees for non-platform apps","Shopify rarely updates so it's a minimal concern"],
     correct:1,
     feedback:"Shopify ships constant API changes, checkout updates, and deprecations. An app built in February drifts out of sync by April. Tapcart has an entire engineering team on Shopify parity — with a custom app, that's your team's job forever."
   },
   {
-    points:400, badge:"cto", label:"Opportunity Cost",
+    points:100, badge:"cto", label:"Opportunity Cost",
     q:"For a CTO, what's the most strategic framing of opportunity cost for building custom?",
     options:["Custom mobile dev is expensive to hire","App Store fees eat into margins","Every engineering hour maintaining a commerce app is an hour not spent on what actually differentiates the business","Custom apps require specialized QA tooling"],
     correct:2,
     feedback:"Hit the strategic priority: 'You could build this — but should you?' Engineering cycles on commerce app maintenance can't go toward the core product. Tapcart delivers a better app without consuming any technical bandwidth."
   },
   {
-    points:400, badge:"cto", label:"Network Effect",
+    points:100, badge:"cto", label:"Network Effect",
     q:"What compounding advantage does Tapcart have that a custom app fundamentally can't replicate?",
     options:["Lower App Store submission fees","Learnings from thousands of merchant apps feed back into the platform — push algorithms, UX, and integrations improve for everyone","Pre-approved Apple developer status","White-label design templates"],
     correct:1,
     feedback:"The network effect is a true differentiator. Tapcart improves for every merchant because aggregate learnings feed back into the product. Your custom app only improves if you invest in it — Tapcart gives you R&D you never had to fund."
   },
   {
-    points:400, badge:"cfo", label:"Push Attribution",
+    points:100, badge:"cfo", label:"Push Attribution",
     q:"What's the definitive proof that push notifications drive truly incremental revenue — not captured demand?",
     options:["Total app revenue exceeds mobile web revenue","A customer gets a push, opens it, and buys in that session — they weren't already on the site about to checkout","Push open rates beat email open rates","App users have higher LTV scores"],
     correct:1,
     feedback:"Push-session attribution is the smoking gun. Ask the CFO: 'If we hadn't sent that push, would they have gone to your site at that exact moment?' Almost always no. That's the triggered, incremental purchase."
   },
   {
-    points:400, badge:"cto", label:"App Store Risk",
+    points:100, badge:"cto", label:"App Store Risk",
     q:"What's the most impactful App Store risk to raise with a CTO considering a custom build?",
     options:["Apple's 30% fee applies to all custom apps","Custom apps can't use Shopify Checkout natively","One App Store rejection can leave you offline for weeks during a critical sales period — Tapcart handles all of this","Getting approval takes longer for new developer accounts"],
     correct:2,
     feedback:"A rejection during a product launch or peak season could be devastating. Tapcart handles all submissions, review cycles, compliance changes, and re-submissions. This is a real operational risk that resonates with technical leaders."
   },
   {
-    points:500, badge:"cfo", label:"Dormant Reactivation",
+    points:100, badge:"cfo", label:"Dormant Reactivation",
     q:"What data proves the app reactivates churned customers rather than just serving active ones?",
     options:["Overall app download numbers","Customers with 60–90+ day purchase gaps who re-engaged via a push-triggered session after downloading the app","Monthly active user counts","App store rating improvements"],
     correct:1,
     feedback:"Dormant reactivation is one of the cleanest incremental proofs. Find customers who effectively churned — no purchase in 60–90+ days — who then downloaded the app and re-engaged via push. That conversion is impossible to attribute to existing demand."
   },
   {
-    points:500, badge:"cto", label:"Infra & Uptime",
+    points:100, badge:"cto", label:"Infra & Uptime",
     q:"What critical operational question should you ask a CTO who wants to build custom?",
     options:["'Do you have iOS developers on staff?'","'Who is your on-call engineer when the app goes down during a major product launch at 11pm on a Saturday?'","'Have you worked with React Native before?'","'What is your App Store review timeline?'"],
     correct:1,
     feedback:"Uptime and incident response is a real cost that's easy to overlook. Tapcart has dedicated infrastructure, monitoring, and on-call response. With a custom app, that's whoever you can find on a Saturday night — and that gap tends to show up at the worst possible moment."
   },
   {
-    points:500, badge:"cfo", label:"One-Liner: ROI",
+    points:100, badge:"cfo", label:"One-Liner: ROI",
     q:"Complete this one-liner: 'Tapcart is a ____-cost revenue channel that generates incremental dollars at a fraction of paid acquisition — and the economics get better over time as your install base grows.'",
     options:["variable","fixed","performance-based","subscription"],
     correct:1,
     feedback:"'Fixed-cost revenue channel' is the exact framing. It positions Tapcart as the opposite of paid media — your cost stays flat while the upside scales with every new app install. That's a fundamentally different and more favorable economic model."
+  },
+  {
+    points:100, badge:"cfo", label:"Push vs. Email Economics",
+    q:"How does Tapcart's cost-per-revenue-dollar compare to email marketing?",
+    options:["Much more expensive than email","About the same as email — $0.02–0.06 range — but with push notification reach and higher conversion rates","Much cheaper than email","Email has no measurable cost per dollar"],
+    correct:1,
+    feedback:"Tapcart performs at email economics ($0.03–$0.06 per dollar) but adds the reach and immediacy of push notifications plus the higher conversion rates of a native app experience. It's the best of both worlds for a CFO comparing owned channels."
+  },
+  {
+    points:100, badge:"cto", label:"Speed to Value",
+    q:"What is the primary time-to-value advantage of Tapcart over a custom-built app?",
+    options:["Tapcart has better designers","Tapcart gets merchants live in the App Store in weeks vs. months of architecture, QA, rejections, and integration testing for a custom build","Tapcart has cheaper engineers","Tapcart already has App Store approval for all merchants"],
+    correct:1,
+    feedback:"Speed to revenue matters. Every week without the app is a week without push-driven revenue. Tapcart's pre-built infrastructure, existing App Store presence, and Shopify integrations compress a months-long custom build into a weeks-long launch."
+  },
+  {
+    points:100, badge:"cfo", label:"Cannibalization: Flip the Argument",
+    q:"A CFO says app users are loyal customers who would've bought anyway. What's the sharpest flip of this logic?",
+    options:["Agree that loyal customers don't need push nudges","The app doesn't just serve loyal customers — it creates loyalty. Cohort data shows customers become more frequent buyers after adopting the app, not just more convenient ones","Loyalty has nothing to do with the app","Suggest removing push notifications to test the hypothesis"],
+    correct:1,
+    feedback:"Flip the causality: the CFO assumes loyalty causes app adoption. The reality is the app amplifies loyalty — it makes it frictionless to browse, buy, and respond to promotions. Show cohort curves: customers with similar histories diverge after app adoption, with app users pulling ahead."
   }
 ];
 
@@ -346,7 +366,7 @@ const SCENARIOS = [
     oneliner:"AI made it cheaper to write code, not cheaper to operate a mobile commerce channel. The build is 15% of the cost — Tapcart handles the other 85% for a predictable annual fee."
   },
   {
-    points:300, badge:"cfo", label:"Push Rates Are Terrible",
+    points:200, badge:"cfo", label:"Push Rates Are Terrible",
     title:"Push Notification Open Rates Are Terrible",
     objection:`"Honestly, we've been pretty disappointed with our push notification performance. Our open rates are low, people are opting out, and it feels like we're just annoying our customers. If push is supposed to be the big value driver here, I'm not seeing it."`,
     framework:[
@@ -358,7 +378,7 @@ const SCENARIOS = [
     oneliner:"Low open rates are a targeting and timing problem, not a push problem. The fix isn't to stop pushing — it's to push smarter. That's exactly what AI-powered segmentation is built for."
   },
   {
-    points:300, badge:"cfo", label:"The Budget Category Argument",
+    points:200, badge:"cfo", label:"The Budget Category Argument",
     title:"The Budget Category Argument",
     objection:`"When I look at our tech stack costs — Shopify, our ESP, our OMS — Tapcart is one of our most expensive 'software' line items. I need to find cuts and this seems like a candidate."`,
     framework:[
@@ -370,7 +390,7 @@ const SCENARIOS = [
     oneliner:"Tapcart is a fixed-cost revenue channel, not a tech subscription. It belongs in the marketing budget and it's your cheapest cost-per-revenue-dollar channel outside of email."
   },
   {
-    points:400, badge:"cto", label:"'Our Dev Team Can Maintain It'",
+    points:200, badge:"cto", label:"'Our Dev Team Can Maintain It'",
     title:"'Our Dev Team Can Maintain It'",
     objection:`"I hear your point about ongoing costs, but we have a solid internal engineering team. They're capable — this isn't beyond them. We could own this ourselves and build exactly what we want."`,
     framework:[
@@ -484,10 +504,10 @@ function handleOverlayClick(e){ if(e.target===document.getElementById('modal-ove
 // ── QUIZ ──────────────────────────────────────────────────────────────────────
 function openQuiz(idx){
   if(usedTiles.has('q'+idx)) return;
-  currentTileKey='q'+idx; quizAnswered=false; stealActive=false;
+  currentTileKey='q'+idx; quizAnswered=false;
   const q=QUESTIONS[idx]; const L=['A','B','C','D'];
   openModal(`
-    <button class="modal-close" onclick="closeModal()">✕</button>
+    <button class="modal-close" onclick="closeAndAdvance()">✕</button>
     <div class="badge-row">
       <span class="modal-badge quiz">⚡ Quiz</span>
       <span class="modal-badge ${q.badge}">${q.badge==='cfo'?'💼 CFO':'💻 CTO'}</span>
@@ -504,8 +524,7 @@ function openQuiz(idx){
         </button>`).join('')}
     </div>
     <div class="feedback" id="modal-feedback"></div>
-    <div class="steal-banner" id="steal-banner"></div>
-    <div id="modal-award"></div>
+    <div id="modal-action"></div>
   `);
 }
 
@@ -515,51 +534,30 @@ function selectQuizAnswer(qIdx,chosen){
   const opts=document.querySelectorAll('.option');
   opts.forEach(o=>o.disabled=true);
   const fb=document.getElementById('modal-feedback');
+  const action=document.getElementById('modal-action');
+  markUsed(currentTileKey);
   if(chosen===q.correct){
     opts[chosen].classList.add('correct');
     fb.className='feedback correct-fb show';
-    fb.innerHTML=`<strong>✓ Correct!</strong>${q.feedback}`;
-    showAwardPanel(q.points,true,false);
-    markUsed(currentTileKey);
+    fb.innerHTML=`<strong>✓ Correct! +${q.points} pts for ${players[turnIdx].name}</strong>${q.feedback}`;
+    players[turnIdx].points+=q.points;
+    renderSidebar();
   } else {
     opts[chosen].classList.add('wrong');
     opts[q.correct].classList.add('reveal');
     fb.className='feedback wrong-fb show';
-    fb.innerHTML=`<strong>✗ Not quite —</strong>${q.feedback}`;
-    // Show steal option
-    const sb=document.getElementById('steal-banner');
-    sb.className='steal-banner show';
-    const halfPts=Math.floor(q.points/2);
-    sb.innerHTML=`
-      <strong>⚡ Steal Opportunity — ${halfPts} pts</strong>
-      Someone else can answer for half points. Who's stealing?
-      <div class="steal-btns">
-        ${players.map((p,i)=>i===turnIdx?'':` 
-          <button class="steal-player-btn" onclick="stealAnswer(${qIdx},${i},${halfPts})">
-            <span style="width:7px;height:7px;border-radius:50%;background:${p.color};display:inline-block"></span>
-            ${p.name}
-          </button>`).join('')}
-        <button class="btn btn-ghost" onclick="noSteal()" style="margin-top:0;padding:7px 12px;font-size:11px;">No steal</button>
-      </div>`;
-    markUsed(currentTileKey);
+    fb.innerHTML=`<strong>✗ Not quite — 0 pts for ${players[turnIdx].name}</strong>${q.feedback}`;
   }
+  action.innerHTML=`<button class="btn btn-primary" onclick="closeAndAdvance()" style="width:100%;justify-content:center;margin-top:16px">Back to Board →</button>`;
 }
 
-function stealAnswer(qIdx,playerIdx,halfPts){
-  // Hide steal banner, award half points
-  document.getElementById('steal-banner').style.display='none';
-  showAwardPanel(halfPts,true,true,playerIdx);
-}
-
-function noSteal(){
-  document.getElementById('steal-banner').style.display='none';
-  showAwardPanel(0,false,false);
-  setTimeout(()=>{ advanceTurn(); closeModal(); },600);
+function closeAndAdvance(){
+  advanceTurn();
+  closeModal();
 }
 
 // ── SCENARIO ──────────────────────────────────────────────────────────────────
 function openScenario(idx){
-  
   currentTileKey='s'+idx; scenarioRevealed=false;
   const s=SCENARIOS[idx];
   openModal(`
@@ -576,17 +574,18 @@ function openScenario(idx){
     <div class="section-label">The Merchant Says...</div>
     <div class="quote-block">${s.objection}</div>
     <p style="color:var(--muted);font-size:13px;margin-top:10px;line-height:1.5">
-      Give your response, then reveal the framework. You decide who gets points.
+      Give your response, then reveal the framework.
     </p>
     <button class="btn btn-teal" onclick="revealScenario(${idx})" style="margin-top:12px">Reveal Framework →</button>
     <div id="scenario-framework"></div>
-    <div id="modal-award"></div>
+    <div id="scenario-verdict"></div>
   `);
 }
 
 function revealScenario(idx){
   if(scenarioRevealed) return; scenarioRevealed=true;
   const s=SCENARIOS[idx];
+  const playerName=players[turnIdx].name;
   document.getElementById('scenario-framework').innerHTML=`
     <div style="margin-top:16px;animation:fadeIn .3s ease">
       <div class="section-label">Response Framework</div>
@@ -595,48 +594,29 @@ function revealScenario(idx){
       <div class="quote-block">${s.oneliner}</div>
     </div>`;
   document.querySelector('.btn-teal[onclick^="revealScenario"]').style.display='none';
-  showAwardPanel(s.points,null,false);
-}
-
-// ── AWARD PANEL ───────────────────────────────────────────────────────────────
-function showAwardPanel(pts,wasCorrect,isSteal,forcedPlayerIdx=null){
-  const el=document.getElementById('modal-award'); if(!el) return;
-  if(pts===0) return;
-  const label = wasCorrect===true && !isSteal ? `Award ${pts} pts to:`
-    : wasCorrect===false ? `Award partial credit (optional):`
-    : isSteal ? `Steal! Award ${pts} pts to:`
-    : `Award ${pts} pts to:`;
-
-  // If forced (steal clicked), pre-populate and auto-award
-  if(forcedPlayerIdx!==null){
-    givePoints(forcedPlayerIdx,pts,true);
-    return;
-  }
-
-  el.innerHTML=`
-    <div class="award-panel">
-      <div class="section-label">🏆 ${label}</div>
-      <div class="award-row">
-        ${players.map((p,i)=>`
-          <button class="award-player-btn" id="award-btn-${i}" onclick="givePoints(${i},${pts},false)">
-            <span style="width:7px;height:7px;border-radius:50%;background:${p.color};display:inline-block"></span>
-            ${p.name}<span style="color:var(--muted);font-size:11px">+${pts}</span>
-          </button>`).join('')}
-        <button class="btn btn-ghost" onclick="skipAward()" style="margin-top:0;padding:8px 12px;font-size:11px">Skip</button>
+  document.getElementById('scenario-verdict').innerHTML=`
+    <div style="margin-top:18px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px 18px;">
+      <div class="section-label" style="color:var(--gold);margin-bottom:12px;">Did ${playerName} nail it?</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-teal" onclick="scoreScenario(${s.points})" style="margin-top:0;flex:1;justify-content:center;">
+          ✓ Yes — +${s.points} pts
+        </button>
+        <button class="btn btn-ghost" onclick="scoreScenario(0)" style="margin-top:0;flex:1;justify-content:center;border-color:var(--warn);color:var(--warn);">
+          ✗ No — 0 pts
+        </button>
       </div>
     </div>`;
 }
 
-function givePoints(playerIdx,pts,autoClose){
-  players[playerIdx].points+=pts;
-  renderSidebar();
-  const btn=document.getElementById(`award-btn-${playerIdx}`);
-  if(btn){ btn.classList.add('awarded'); btn.innerHTML=`<span style="width:7px;height:7px;border-radius:50%;background:${players[playerIdx].color};display:inline-block"></span>${players[playerIdx].name} ✓`; }
+function scoreScenario(pts){
+  if(pts>0){
+    players[turnIdx].points+=pts;
+    renderSidebar();
+  }
   advanceTurn();
-  setTimeout(closeModal, autoClose?600:700);
+  closeModal();
 }
 
-function skipAward(){ advanceTurn(); closeModal(); }
 
 // ── UTILS ─────────────────────────────────────────────────────────────────────
 function markUsed(key){ usedTiles.add(key); renderBoard(); checkAllUsed(); }
